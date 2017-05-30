@@ -1,4 +1,4 @@
-package msg;
+package sendToServer.msg;
 
 import utils.ByteArray;
 

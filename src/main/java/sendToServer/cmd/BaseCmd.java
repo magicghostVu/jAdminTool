@@ -1,10 +1,11 @@
-package cmd;
+package sendToServer.cmd;
 
 import utils.ByteArray;
 
 /**
  * Created by CPU10340_LOCAL on 24/05/2017.
  */
+//baseCmd will contain info to be send to server
 public class BaseCmd {
     private int controllerId;
     private int typeId;

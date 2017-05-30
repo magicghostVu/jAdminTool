@@ -1,6 +1,7 @@
 package utils;
 
 import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 
 /**
  * Created by CPU10340_LOCAL on 24/05/2017.
@@ -10,6 +11,8 @@ public class ByteUtils {
     private static final char TAB = 9;
     private static final String NEW_LINE = System.getProperty("line.separator");
     private static final char DOT = 46;
+
+    private static Charset charset = Charset.forName("UTF-8");
 
     public ByteUtils() {
     }
@@ -62,6 +65,30 @@ public class ByteUtils {
             sb.append(hexLine).append('\t').append(chrLine).append(NEW_LINE);
         }
         return sb.toString();
+    }
+    public static String readString(ByteBuffer bf){
+        String data= "";
+        try{
+            short lengthString= bf.getShort();
+            byte[] arr= new byte[lengthString];
+            bf.get(arr);
+            data= toString(arr);
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return data;
+    }
+
+    public static String toString(byte[] arr){
+        int lenght= arr.length;
+        for (int i = 0; i < arr.length-1 ; i++) {
+            if(arr[i]==0 && arr[i+1]==0){
+                lenght=i;
+                break;
+            }
+        }
+        return new String(arr, 0, lenght, charset);
     }
 
 }
