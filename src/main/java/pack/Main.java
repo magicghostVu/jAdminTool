@@ -82,7 +82,6 @@ public class Main {
                         currentChannel.finishConnect();
                         System.out.println("Finish Connect");
                     }
-
                     // received package from server, at here, receive handshake sendToServer.msg
                     else if (keySelected.isReadable()) {
                         ByteBuffer tmpByteBuffer = ByteBuffer.allocate(1024);
@@ -90,13 +89,8 @@ public class Main {
                         ByteBuffer target = ByteBuffer.wrap(tmpByteBuffer.array());
                         OriginMessage oMessage = new OriginMessage(target);
                         System.out.println("bin data length :" + oMessage.getBinDataLength());
-
-
                         HandshakeMsg handshakeMsg = new HandshakeMsg(oMessage.getData());
-
                         System.out.println(handshakeMsg.getSessionToken());
-
-
                     }
                 } catch (IOException ioe) {
                     ioe.printStackTrace();
