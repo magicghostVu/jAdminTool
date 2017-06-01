@@ -70,6 +70,8 @@ public class Main {
 
         socketChannel.register(selector, operation);
 
+        //selector.
+
         while (true) {
             int numberKey = selector.select();
             //System.out.println("");
