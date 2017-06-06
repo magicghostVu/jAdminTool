@@ -19,7 +19,6 @@ public class HandShakeCmd extends BaseCmd {
         super(0);
         this.token = token;
         this.setControllerId(0);
-
     }
 
     public boolean createBody(){

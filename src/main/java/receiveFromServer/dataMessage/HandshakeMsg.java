@@ -1,7 +1,6 @@
 package receiveFromServer.dataMessage;
 
 import utils.ByteUtils;
-
 import java.nio.ByteBuffer;
 
 /**
@@ -15,14 +14,14 @@ public class HandshakeMsg extends AbstractDataMsg {
         unPackData(data);
     }
 
-    @Override
-    protected void unPackData(byte[] data) {
-        ByteBuffer buffer= ByteBuffer.wrap(data);
+
+    public void unPackData(byte[] data) {
+        /*ByteBuffer buffer= ByteBuffer.wrap(data);
         this.targetController= buffer.get();
         this.cmdId= buffer.getShort();
         this.errCode= buffer.get();
         this.sessionToken= ByteUtils.readString(buffer);
-        this.reconnectTime= buffer.getInt();
+        this.reconnectTime= buffer.getInt();*/
     }
 
     public String getSessionToken() {
