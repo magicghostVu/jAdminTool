@@ -4,6 +4,7 @@ import receiveFromServer.OriginMessage;
 import receiveFromServer.dataMessage.HandshakeMsg;
 import sendToServer.cmd.BaseCmd;
 import sendToServer.cmd.HandShakeCmd;
+import sendToServer.cmd.LoginCmd;
 import sendToServer.msg.Message;
 import utils.MessageUtils;
 
@@ -28,15 +29,15 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
 
-        Map<Integer, Boolean> mapTask= new ConcurrentHashMap<>();
+        Map<Integer, Boolean> mapTask = new ConcurrentHashMap<>();
 
         System.out.println("Hello");
         InetSocketAddress socketAddress = new InetSocketAddress("49.213.81.43", 10002);
         SocketChannel socketChannel = SocketChannel.open(socketAddress);
         socketChannel.configureBlocking(false);
         HandShakeCmd handShakeCmd = new HandShakeCmd("");
-        Message message= MessageUtils.convertBaseCmdToMessage(handShakeCmd);
-        ByteBuffer targetBuffer= MessageUtils.convertMessageToBuffer(message);
+        Message message = MessageUtils.convertBaseCmdToMessage(handShakeCmd);
+        ByteBuffer targetBuffer = MessageUtils.convertMessageToBuffer(message);
         socketChannel.write(targetBuffer);
 
         System.out.println("handShake sent");
@@ -50,13 +51,13 @@ public class Main {
         //1 is task login
 
         mapTask.put(0, false);
-        mapTask.put(1, false);
+        //mapTask.put(1, false);
 
-        Thread threadListenDataFromServer= new Thread(()->{
+        Thread threadListenDataFromServer = new Thread(() -> {
             while (true) {
                 try {
                     selector.select();
-                }catch (IOException ioe){
+                } catch (IOException ioe) {
                     ioe.printStackTrace();
                 }
                 //selector.select();
@@ -75,21 +76,20 @@ public class Main {
                             currentChannel.read(tmpByteBuffer);
                             ByteBuffer target = ByteBuffer.wrap(tmpByteBuffer.array());
                             OriginMessage oMessage = new OriginMessage(target);
-                            System.out.println("received package with cmdId: "+ oMessage.getCmdID());
-                            switch (oMessage.getCmdID()){
-                                case 0:{
+                            System.out.println("received package with cmdId: " + oMessage.getCmdID());
+                            switch (oMessage.getCmdID()) {
+                                case 0: {
                                     System.out.println("handShake msg received");
                                     mapTask.put(0, true);
                                     break;
                                 }
 
-                                case 1:{
+                                case 1: {
                                     System.out.println("LoginMsg rec");
-                                    
+                                    mapTask.put(1, true);
                                     break;
                                 }
                             }
-
 
 
                         }
@@ -102,17 +102,19 @@ public class Main {
         });
         threadListenDataFromServer.start();
 
-        Thread threadSendLogin = new Thread(()->{
+        Thread threadSendLogin = new Thread(() -> {
+            while (true) {
+                if (mapTask.get(0) && !mapTask.containsKey(1)) {
+                    System.out.println("HandShake done and not send login, send login");
+                    LoginCmd loginCmd= new LoginCmd("gmtool1");
+                    //Message messageLogin=
 
-            while (true){
-                if(mapTask.get(1)){
 
                 }
             }
 
 
         });
-
 
 
     }

@@ -7,8 +7,9 @@ public class LoginCmd extends BaseCmd {
     private String sessionKey;
     private String trackingData= "{}";
     private String socialData= "{}";
-    public LoginCmd(int typeId) {
+    public LoginCmd(String sessionKey) {
         super(1);
+        setSessionKey(sessionKey);
     }
 
 
