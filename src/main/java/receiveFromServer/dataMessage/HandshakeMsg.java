@@ -1,7 +1,6 @@
 package receiveFromServer.dataMessage;
 
-import utils.ByteUtils;
-import java.nio.ByteBuffer;
+import utils.ByteArray;
 
 /**
  * Created by Fresher on 30/05/2017.
@@ -16,12 +15,19 @@ public class HandshakeMsg extends AbstractDataMsg {
 
 
     public void unPackData(byte[] data) {
-        /*ByteBuffer buffer= ByteBuffer.wrap(data);
-        this.targetController= buffer.get();
-        this.cmdId= buffer.getShort();
-        this.errCode= buffer.get();
-        this.sessionToken= ByteUtils.readString(buffer);
-        this.reconnectTime= buffer.getInt();*/
+        ByteArray byteArray= new ByteArray(data);
+        try {
+
+            byteArray.readByte();
+            byteArray.readShort();
+            byteArray.readByte();
+
+
+            sessionToken= byteArray.readUTF();
+            reconnectTime= byteArray.readInt();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     public String getSessionToken() {

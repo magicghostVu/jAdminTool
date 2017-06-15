@@ -34,7 +34,6 @@ public class MessageUtils {
     }
 
     public static Message convertBaseCmdToMessage(BaseCmd cmd) {
-
         Message result= new Message();
         result.setTargetController(cmd.getControllerId());
         result.setId(cmd.getTypeId());
@@ -42,7 +41,7 @@ public class MessageUtils {
             result.setContent(cmd.getBody());
             return result;
         }else{
-            throw new IllegalArgumentException("can not create body"+ cmd);
+            throw new IllegalArgumentException("can not create body "+ cmd);
             //return null;
         }
 

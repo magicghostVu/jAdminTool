@@ -23,25 +23,33 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class Main {
 
-    public static void sendCmdToServer(BaseCmd cmd) {
-
+    public static void sendCmdToServer(SocketChannel channel, BaseCmd cmd) {
+        try {
+            Message message = MessageUtils.convertBaseCmdToMessage(cmd);
+            ByteBuffer buffer = MessageUtils.convertMessageToBuffer(message);
+            channel.write(buffer);
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+        }
     }
 
     public static void main(String[] args) throws Exception {
 
-        Map<Integer, Boolean> mapTask = new ConcurrentHashMap<>();
+        Map<Integer, Integer> mapTask = new ConcurrentHashMap<>();
 
         System.out.println("Hello");
         InetSocketAddress socketAddress = new InetSocketAddress("49.213.81.43", 10002);
         SocketChannel socketChannel = SocketChannel.open(socketAddress);
         socketChannel.configureBlocking(false);
         HandShakeCmd handShakeCmd = new HandShakeCmd("");
-        Message message = MessageUtils.convertBaseCmdToMessage(handShakeCmd);
+        /*Message message = MessageUtils.convertBaseCmdToMessage(handShakeCmd);
         ByteBuffer targetBuffer = MessageUtils.convertMessageToBuffer(message);
-        socketChannel.write(targetBuffer);
+        socketChannel.write(targetBuffer);*/
+
+        sendCmdToServer(socketChannel, handShakeCmd);
 
         System.out.println("handShake sent");
-        targetBuffer.clear();
+        //targetBuffer.clear();
         Selector selector = Selector.open();
         int operation = SelectionKey.OP_CONNECT | SelectionKey.OP_READ | SelectionKey.OP_WRITE;
         socketChannel.register(selector, operation);
@@ -50,9 +58,12 @@ public class Main {
         //0 is task handshake
         //1 is task login
 
-        mapTask.put(0, false);
-        //mapTask.put(1, false);
 
+        /* status: 1 sent
+                   2 received
+        * */
+        mapTask.put(0, 1);
+        //mapTask.put(1, false);
         Thread threadListenDataFromServer = new Thread(() -> {
             while (true) {
                 try {
@@ -80,18 +91,18 @@ public class Main {
                             switch (oMessage.getCmdID()) {
                                 case 0: {
                                     System.out.println("handShake msg received");
-                                    mapTask.put(0, true);
+                                    HandshakeMsg msg= new HandshakeMsg(oMessage.getData());
+                                    System.out.println("handShake session token "+ msg.getSessionToken());
+                                    System.out.println("handShake reconnectTime "+ msg.getReconnectTime());
+                                    mapTask.put(0, 2);
                                     break;
                                 }
-
                                 case 1: {
-                                    System.out.println("LoginMsg rec");
-                                    mapTask.put(1, true);
+                                    System.out.println("LoginMsg received");
+                                    mapTask.put(1, 2);
                                     break;
                                 }
                             }
-
-
                         }
                     } catch (IOException ioe) {
                         ioe.printStackTrace();
@@ -101,20 +112,21 @@ public class Main {
             }
         });
         threadListenDataFromServer.start();
-
         Thread threadSendLogin = new Thread(() -> {
             while (true) {
-                if (mapTask.get(0) && !mapTask.containsKey(1)) {
+                // if task handShake done and mapTask not contain task login
+                if (mapTask.get(0) == 2 && !mapTask.containsKey(1)) {
                     System.out.println("HandShake done and not send login, send login");
-                    LoginCmd loginCmd= new LoginCmd("gmtool1");
-                    //Message messageLogin=
-
-
+                    LoginCmd loginCmd = new LoginCmd("gmtool1");
+                    sendCmdToServer(socketChannel,loginCmd);
+                    mapTask.put(1, 1);
+                    System.out.println("Sent login");
+                    break;
                 }
             }
-
-
         });
+
+        threadSendLogin.start();
 
 
     }
