@@ -19,7 +19,7 @@ public class OriginMessage {
         target.get(data);
         ByteBuffer dataBuffer= ByteBuffer.wrap(data);
         targetController= dataBuffer.get();
-        cmdID= dataBuffer.getShort();
+        cmdID = dataBuffer.getShort();
     }
 
     public byte getPackageHeader() {

@@ -8,24 +8,20 @@ import utils.ByteArray;
 public class HandshakeMsg extends AbstractDataMsg {
     private String sessionToken;
     private int reconnectTime;
+
     public HandshakeMsg(byte[] data) {
         super(data);
-        unPackData(data);
+        unpackData(data);
     }
 
 
-    public void unPackData(byte[] data) {
-        ByteArray byteArray= new ByteArray(data);
+    @Override
+    public void unpackData(byte[] data) {
         try {
-
-            byteArray.readByte();
-            byteArray.readShort();
-            byteArray.readByte();
-
-
-            sessionToken= byteArray.readUTF();
-            reconnectTime= byteArray.readInt();
-        }catch (Exception e){
+            ByteArray ba= readErrorCode(data);
+            sessionToken = ba.readUTF();
+            reconnectTime = ba.readInt();
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
