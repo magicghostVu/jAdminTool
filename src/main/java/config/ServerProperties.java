@@ -14,7 +14,6 @@ public class ServerProperties {
         try {
             FileInputStream fileInputStream = new FileInputStream(
                     System.getProperty("user.dir") + File.separator + "config/server.properties");
-
             this.properties= new Properties();
             properties.load(fileInputStream);
         } catch (IOException ioe) {

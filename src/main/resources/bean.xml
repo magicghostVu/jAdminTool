@@ -3,8 +3,16 @@
 <beans xmlns = "http://www.springframework.org/schema/beans"
        xmlns:xsi = "http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation = "http://www.springframework.org/schema/beans
-   http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
-    <bean id="server-property" class="config.ServerProperties">
+   http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
+    <bean id="mongo_database_wrap" class="db.MongoDatabaseWrap">
     </bean>
+    <bean id = "user_DAO_impl" class="model.UserDAOImpl">
+        <property name="wrap">
+            <ref  bean="mongo_database_wrap"/>
+        </property>
+    </bean>
+
+
+
 
 </beans>
