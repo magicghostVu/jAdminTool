@@ -69,6 +69,18 @@ public class MyTest extends TestCase {
         assertTrue(!userDAO.modelExist(userModel));
     }
 
+    @Test
+    public void testSaveAndUpdateModel(){
+        ServerConfig.initConfig();
+        UserDAOImpl userDAO= GlobalApplicationContextWrap.getInstance()
+                .getApplicationContext().getBean("user_DAO_impl", UserDAOImpl.class);
+        UserModel model=  userDAO.getUserModelByUserName("phuvh");
+        //UserModel model = new UserModel("phuvh", AccountType.SUPER_ADMIN);
+        model.setPasswordChanged(true);
+        model.setPasswordHash("hdfvdsjhgbqlngk4kjndknb");
+        boolean res=model.save();
+        assertTrue(res);
+    }
 
 
 }

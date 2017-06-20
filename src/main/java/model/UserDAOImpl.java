@@ -14,8 +14,6 @@ import org.json.JSONObject;
 public class UserDAOImpl implements UserDAO {
     private MongoDatabaseWrap wrap;
     private CollectionName collectionName = CollectionName.USER;
-
-
     private MongoCollection userCollection;
 
     public UserDAOImpl() {
@@ -49,11 +47,12 @@ public class UserDAOImpl implements UserDAO {
         try {
             MongoCollection userCollection = getUserCollection();
             Document targetInsert = JSONUtils.convertModelToDocument(model);
-
             // todo: implement update existed model
             if (modelExist(model)) {
-
-
+                Document queryId= new Document();
+                queryId.put("_id", model.getUsername());
+                userCollection.updateOne(queryId, new Document("$set",model.toDocument()));
+                return true;
             } else {
                 userCollection.insertOne(targetInsert);
                 return true;
@@ -78,7 +77,7 @@ public class UserDAOImpl implements UserDAO {
 
     public void setWrap(MongoDatabaseWrap wrap) {
         this.wrap = wrap;
-        setUserCollection(wrap.getMongoCollection(CollectionName.USER.getColletionName()));
+        setUserCollection(wrap.getMongoCollection(collectionName.getColletionName()));
     }
 
     public MongoCollection getUserCollection() {
