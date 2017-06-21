@@ -5,6 +5,7 @@ import config.constant.AccountType;
 import globalAppContext.GlobalApplicationContextWrap;
 import org.bson.Document;
 import org.json.JSONObject;
+import utils.MyPair;
 
 /**
  * Created by Fresher on 20/06/2017.
@@ -16,6 +17,8 @@ public class UserModel extends AbstractModel  implements UserRepository{
             setPasswordHash("");
             setLastTimeUpdate(System.currentTimeMillis()/1000L);
             setPasswordChanged(false);
+            setTimeCreateAccessToken(0L);
+            setAccessToken("");
     }
     //properties
     private String username;
@@ -23,6 +26,8 @@ public class UserModel extends AbstractModel  implements UserRepository{
     private AccountType accountType;
     private long lastTimeUpdate;
     private boolean passwordChanged;
+    private long timeCreateAccessToken;
+    private String accessToken;
 
     @Override
     public boolean save() {
@@ -70,6 +75,22 @@ public class UserModel extends AbstractModel  implements UserRepository{
 
     public void setPasswordChanged(boolean passwordChanged) {
         this.passwordChanged = passwordChanged;
+    }
+
+    public long getTimeCreateAccessToken() {
+        return timeCreateAccessToken;
+    }
+
+    public void setTimeCreateAccessToken(long timeCreateAccessToken) {
+        this.timeCreateAccessToken = timeCreateAccessToken;
+    }
+
+    public String getAccessToken() {
+        return accessToken;
+    }
+
+    public void setAccessToken(String accessToken) {
+        this.accessToken = accessToken;
     }
 
     @Override

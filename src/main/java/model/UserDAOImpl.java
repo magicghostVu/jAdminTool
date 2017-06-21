@@ -12,6 +12,7 @@ import org.json.JSONObject;
  * Created by Fresher on 20/06/2017.
  */
 public class UserDAOImpl implements UserDAO {
+
     private MongoDatabaseWrap wrap;
     private CollectionName collectionName = CollectionName.USER;
     private MongoCollection userCollection;
@@ -36,25 +37,22 @@ public class UserDAOImpl implements UserDAO {
             tmpJo.remove("_id");
             return ServerConfig.globalGson.fromJson(tmpJo.toString(), UserModel.class);
         } else {
-            //return null if can not find any model with
+            //return null if can not find any model with above username
             return null;
         }
     }
 
     @Override
     public boolean saveUserModel(UserModel model) {
-        // todo: fix logic here
         try {
             MongoCollection userCollection = getUserCollection();
-            Document targetInsert = JSONUtils.convertModelToDocument(model);
-            // todo: implement update existed model
             if (modelExist(model)) {
                 Document queryId= new Document();
                 queryId.put("_id", model.getUsername());
                 userCollection.updateOne(queryId, new Document("$set",model.toDocument()));
                 return true;
             } else {
-                userCollection.insertOne(targetInsert);
+                userCollection.insertOne(model.toDocument());
                 return true;
             }
         } catch (Exception e) {

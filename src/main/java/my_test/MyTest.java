@@ -78,6 +78,7 @@ public class MyTest extends TestCase {
         //UserModel model = new UserModel("phuvh", AccountType.SUPER_ADMIN);
         model.setPasswordChanged(true);
         model.setPasswordHash("hdfvdsjhgbqlngk4kjndknb");
+        model.setAccessToken("iuhgdfijhgkfdj");
         boolean res=model.save();
         assertTrue(res);
     }

@@ -7,9 +7,7 @@ public enum AccountType {
     ADMIN(1),
     SUPER_ADMIN(0),
     NORMAL(2);
-
     int id;
-
     AccountType(int id) {
         this.id = id;
     }
