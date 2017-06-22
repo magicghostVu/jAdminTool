@@ -9,6 +9,7 @@ public class ServerConfig {
     public static String HOST_MONGO;
     public static Integer PORT_MONGO;
     public static String DB_NAME;
+    public static String USERNAME_BITZERO_PREFIX;
 
     public static Gson globalGson = new Gson();
 
@@ -19,6 +20,7 @@ public class ServerConfig {
         HOST_MONGO = properties.getString("host_mongo");
         PORT_MONGO = properties.getInt("port_mongo");
         DB_NAME = properties.getString("db_name");
+        USERNAME_BITZERO_PREFIX= properties.getString("account_name_bitzero_prefix");
     }
 
 

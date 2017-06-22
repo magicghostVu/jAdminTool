@@ -8,4 +8,5 @@ import org.bson.Document;
 public abstract class AbstractModel {
     abstract public String toJsonString();
     abstract public Document toDocument();
+
 }

@@ -11,8 +11,10 @@
             <ref  bean="mongo_database_wrap"/>
         </property>
     </bean>
-
-
-
+    <bean id="authentication_service" class="services.AuthenticationServiceImpl">
+        <property name="userDAO">
+            <ref bean="user_DAO_impl"/>
+        </property>
+    </bean>
 
 </beans>

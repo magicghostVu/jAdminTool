@@ -4,9 +4,10 @@ import com.mongodb.client.MongoCollection;
 import config.ServerConfig;
 import config.constant.CollectionName;
 import db.MongoDatabaseWrap;
-import db.utils.JSONUtils;
 import org.bson.Document;
 import org.json.JSONObject;
+
+import javax.print.Doc;
 
 /**
  * Created by Fresher on 20/06/2017.
@@ -27,20 +28,28 @@ public class UserDAOImpl implements UserDAO {
         MongoCollection userCollection = getUserCollection();
         Document query = new Document();
         query.put("_id", username);
-        Document document = (Document) userCollection.find(query).limit(1).iterator().next();
+        Document document = (Document) userCollection.find(query).limit(1).first();
         if (document != null) {
-            JSONObject tmpJo = new JSONObject();
-            document.keySet().forEach(key -> {
-                tmpJo.put(key, document.get(key));
-            });
-            tmpJo.put("username", tmpJo.get("_id"));
-            tmpJo.remove("_id");
-            return ServerConfig.globalGson.fromJson(tmpJo.toString(), UserModel.class);
+            return convertDocumentToUserModel(document);
         } else {
             //return null if can not find any model with above username
             return null;
         }
     }
+
+
+
+    private UserModel convertDocumentToUserModel(Document userDocument){
+        JSONObject tmpJo = new JSONObject();
+        userDocument.keySet().forEach(key -> {
+            tmpJo.put(key, userDocument.get(key));
+        });
+        tmpJo.put("username", tmpJo.get("_id"));
+        tmpJo.remove("_id");
+        return ServerConfig.globalGson.fromJson(tmpJo.toString(), UserModel.class);
+    }
+
+
 
     @Override
     public boolean saveUserModel(UserModel model) {
@@ -67,6 +76,24 @@ public class UserDAOImpl implements UserDAO {
         query.put("_id", model.getUsername());
         MongoCollection userCollection = getUserCollection();
         return userCollection.find(query).limit(1).first() != null;
+    }
+
+    @Override
+    public UserModel getModelByAccessToken(String accTk) {
+        try{
+            MongoCollection userCollection= getUserCollection();
+            Document queryByAccTk= new Document();
+            queryByAccTk.put("accessToken", accTk);
+            Document resDocument= (Document)userCollection.find(queryByAccTk).limit(1).first();
+            if(resDocument!=null){
+                return convertDocumentToUserModel(resDocument);
+            }else{
+                return null;
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public MongoDatabaseWrap getWrap() {

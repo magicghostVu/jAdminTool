@@ -12,7 +12,6 @@ import java.util.HashSet;
  */
 public class MongoDatabaseWrap {
     private MongoDatabase mongoDatabase;
-
     public MongoDatabaseWrap() {
         MongoClient mongoClient = new MongoClient(ServerConfig.HOST_MONGO, ServerConfig.PORT_MONGO);
         this.mongoDatabase = mongoClient.getDatabase(ServerConfig.DB_NAME);

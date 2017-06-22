@@ -11,4 +11,6 @@ public interface UserDAO {
 
     boolean modelExist(UserModel model);
 
+    UserModel getModelByAccessToken(String accTk);
+
 }
