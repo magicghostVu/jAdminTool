@@ -22,7 +22,6 @@ public class UserManagementServiceImpl implements UserManagementService {
 
     @Override
     public User getUserByAccessToken(String accessToken) {
-
         return mapAccessTokenUser.get(accessToken);
     }
 
@@ -33,7 +32,10 @@ public class UserManagementServiceImpl implements UserManagementService {
 
     @Override
     public boolean addUserToMap(User user) {
-        return false;
+        mapUsernameUser.put(user.getModel().getUsername(), user);
+        mapAccessTokenUser.put(user.getModel().getAccessToken(), user);
+        mapSocketChannelUser.put(user.getSocketChannel(), user);
+        return true;
     }
 
     @Override
@@ -42,7 +44,7 @@ public class UserManagementServiceImpl implements UserManagementService {
     }
 
     @Override
-    public User getUserBySocketChannle(SocketChannel socketChannel) {
+    public User getUserBySocketChannel(SocketChannel socketChannel) {
         return mapSocketChannelUser.get(socketChannel);
     }
 }

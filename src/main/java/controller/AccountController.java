@@ -3,6 +3,8 @@ package controller;
 import config.ServerConfig;
 import domain.User;
 import globalAppContext.GlobalApplicationContextWrap;
+import model.UserDAO;
+import model.UserDAOImpl;
 import model.UserModel;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -27,12 +29,14 @@ import utils.MyPair;
 @EnableAutoConfiguration
 public class AccountController {
 
-    AuthenticationService authenticationService = GlobalApplicationContextWrap.getInstance()
+    private AuthenticationService authenticationService = GlobalApplicationContextWrap.getInstance()
             .getApplicationContext().getBean("authentication_service", AuthenticationServiceImpl.class);
 
-    UserManagementService userManagementService = GlobalApplicationContextWrap.getInstance()
+    private UserManagementService userManagementService = GlobalApplicationContextWrap.getInstance()
             .getApplicationContext().getBean("user_management_service", UserManagementServiceImpl.class);
 
+    private UserDAO userDAO= GlobalApplicationContextWrap.getInstance()
+            .getApplicationContext().getBean("user_DAO_impl", UserDAOImpl.class);
 
     @RequestMapping(value = "/home")
     public String home() {
@@ -59,6 +63,13 @@ public class AccountController {
                 User user = userManagementService.getUserByUsername(pairAuthen.get_1());
                 if (user == null) {
                     // user first login so, create new user and put it to userManagement service
+                    // then send handshake and login to bit_zero
+                    UserModel userModel= userDAO.getUserModelByUserName(pairAuthen.get_1());
+                    // channel is registered
+                    user= new User(userModel);
+
+
+
 
                     
 

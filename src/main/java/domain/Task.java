@@ -27,9 +27,10 @@ public class Task {
     }
 
     public OriginMessage executeTask(User u) {
-        //todo: send cmd to server, submit task mo map, and waiting
+        //todo: send cmd to server, submit task to map, and waiting
         u.getMapTask().put(this.idTask, this);
         sendCmdToServer(u.getSocketChannel());
+        setStatus(TaskStatus.SENT);
         long timeStartExecute = System.currentTimeMillis();
         while (true) {
             long currentTime = System.currentTimeMillis();

@@ -49,7 +49,7 @@ public class ServiceListenSocketEventFromServer {
                         SocketChannel socketChannel= (SocketChannel) keySelected.channel();
 
 
-                        //todo: getUser by channel
+                        //todo: getUser by channel, update map task
 
 
 
