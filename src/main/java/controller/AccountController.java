@@ -1,6 +1,7 @@
 package controller;
 
 import config.ServerConfig;
+import domain.User;
 import globalAppContext.GlobalApplicationContextWrap;
 import model.UserModel;
 import org.json.JSONException;
@@ -14,6 +15,8 @@ import restful.response.BaseRestResponse;
 import restful.response.RestfulErrorDefine;
 import services.AuthenticationService;
 import services.AuthenticationServiceImpl;
+import services.UserManagementService;
+import services.UserManagementServiceImpl;
 import utils.MyPair;
 
 /**
@@ -27,6 +30,10 @@ public class AccountController {
     AuthenticationService authenticationService = GlobalApplicationContextWrap.getInstance()
             .getApplicationContext().getBean("authentication_service", AuthenticationServiceImpl.class);
 
+    UserManagementService userManagementService = GlobalApplicationContextWrap.getInstance()
+            .getApplicationContext().getBean("user_management_service", UserManagementServiceImpl.class);
+
+
     @RequestMapping(value = "/home")
     public String home() {
         return "home";
@@ -39,10 +46,27 @@ public class AccountController {
             // implement authentication service here
             String username = dataLogin.getString("username");
             String password = dataLogin.getString("password");
-            /*AuthenticationService authenticationService = GlobalApplicationContextWrap.getInstance()
-                    .getApplicationContext().getBean("authentication_service", AuthenticationServiceImpl.class);*/
             MyPair<String, String> pairAuthen = authenticationService.authenUsernamePassword(username, password);
             if (pairAuthen != null) {
+
+
+                //todo: check if user exist in UserManagement,
+                // if had update it and continue use it
+                // if it is not exist, create new user with data and put it in to the maps
+                // (update it into userManagement service )
+
+                // get user by user name from Map
+                User user = userManagementService.getUserByUsername(pairAuthen.get_1());
+                if (user == null) {
+                    // user first login so, create new user and put it to userManagement service
+
+                    
+
+                } else {
+                    // update it
+                }
+
+
                 return createResponseString(RestfulErrorDefine.SUCCESS, pairAuthen.get_2());
             } else {
                 return createResponseString(RestfulErrorDefine.USERNAME_OR_PASSWORD_INVALID, "");
@@ -57,12 +81,10 @@ public class AccountController {
         try {
             JSONObject dataAccTk = new JSONObject(data);
             String accessToken = dataAccTk.getString("access-token");
-            /*AuthenticationService authenticationService = GlobalApplicationContextWrap.getInstance()
-                    .getApplicationContext().getBean("authentication_service", AuthenticationServiceImpl.class);*/
             UserModel model = authenticationService.authenAccessToken(accessToken);
             if (model != null) {
                 model.clearAccessToken();
-                return createResponseString(RestfulErrorDefine.SUCCESS, model.getUsername());
+                return createResponseString(RestfulErrorDefine.SUCCESS, "logout: " + model.getUsername());
             } else {
                 return createResponseString(RestfulErrorDefine.FAILED, "");
             }
@@ -73,23 +95,26 @@ public class AccountController {
         //return null;
     }
 
-    @RequestMapping(value = "authen-acctk", method = RequestMethod.POST, consumes = "application/json")
+    @RequestMapping(value = "test-authen-acctk", method = RequestMethod.POST, consumes = "application/json")
     public String testAuthenAccToken(@RequestBody String jsonData) {
         try {
             JSONObject dataObject = new JSONObject(jsonData);
             String accessToken = dataObject.getString("access-token");
-            /*AuthenticationService authenticationService = GlobalApplicationContextWrap.getInstance()
-                    .getApplicationContext().getBean("authentication_service", AuthenticationServiceImpl.class);*/
             UserModel userModel = authenticationService.authenAccessToken(accessToken);
             if (userModel != null) {
                 return createResponseString(RestfulErrorDefine.SUCCESS, userModel.getUsername());
             } else {
                 return createResponseString(RestfulErrorDefine.FAILED, "");
             }
-            //return null;
         } catch (JSONException jo) {
             return createResponseString(RestfulErrorDefine.REQUEST_BODY_INVALID, "");
         }
+    }
+
+    public String addAccount(String jsonData) {
+
+
+        return null;
     }
 
     private String createResponseString(RestfulErrorDefine err, String data) {

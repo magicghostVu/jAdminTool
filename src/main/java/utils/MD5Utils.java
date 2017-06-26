@@ -20,7 +20,6 @@ public class MD5Utils {
                 sb.append(Integer.toHexString((resultBytes[i] & 0xFF) | 0x100).substring(1,3));
             }
             return sb.toString();
-            //return null;
         } catch (NoSuchAlgorithmException | UnsupportedEncodingException exception) {
             exception.printStackTrace();
             return null;

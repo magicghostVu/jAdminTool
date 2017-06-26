@@ -8,8 +8,6 @@ import utils.MyPair;
 /**
  * Created by Fresher on 22/06/2017.
  */
-
-
 // add this class to bean
 public class AuthenticationServiceImpl implements AuthenticationService {
 
@@ -53,4 +51,5 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public void setUserDAO(UserDAO userDAO) {
         this.userDAO = userDAO;
     }
+
 }

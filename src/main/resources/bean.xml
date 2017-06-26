@@ -11,10 +11,22 @@
             <ref  bean="mongo_database_wrap"/>
         </property>
     </bean>
+
+    <bean id="user_management_service" class="services.UserManagementServiceImpl">
+    </bean>
+
     <bean id="authentication_service" class="services.AuthenticationServiceImpl">
         <property name="userDAO">
             <ref bean="user_DAO_impl"/>
         </property>
     </bean>
+
+    <bean id="listen_data_from_server" class="services.ServiceListenSocketEventFromServer" >
+        <property name="userManagementService">
+            <ref bean="user_management_service" />
+        </property>
+    </bean>
+
+
 
 </beans>

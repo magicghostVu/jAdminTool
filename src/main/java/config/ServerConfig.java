@@ -11,6 +11,11 @@ public class ServerConfig {
     public static String DB_NAME;
     public static String USERNAME_BITZERO_PREFIX;
 
+    public static String BITZERO_SERVER_ADDRESS;
+    public static Integer BITZERO_SERVER_PORT;
+
+    public static long TIME_OUT_EXECUTE_TASK;
+
     public static Gson globalGson = new Gson();
 
 
@@ -21,6 +26,9 @@ public class ServerConfig {
         PORT_MONGO = properties.getInt("port_mongo");
         DB_NAME = properties.getString("db_name");
         USERNAME_BITZERO_PREFIX= properties.getString("account_name_bitzero_prefix");
+        BITZERO_SERVER_ADDRESS= properties.getString("bitzero_server_address");
+        BITZERO_SERVER_PORT= properties.getInt("bitzero_server_port");
+        TIME_OUT_EXECUTE_TASK= properties.getLong("timeout_execute_task");
     }
 
 

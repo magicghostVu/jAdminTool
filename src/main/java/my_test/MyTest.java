@@ -12,6 +12,9 @@ import model.UserModel;
 import org.junit.Test;
 import utils.MD5Utils;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Created by magic_000 on 20/06/2017.
  */
@@ -98,5 +101,11 @@ public class MyTest extends TestCase {
         assertTrue(model!=null);
     }
 
+
+    public void testMap(){
+        Map<Integer, Integer> mapTest= new HashMap<>();
+        Integer res= mapTest.get(1);
+        assertTrue(res==null);
+    }
 
 }

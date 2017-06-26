@@ -35,4 +35,15 @@ public class ServerProperties {
     public String getString(String key){
         return properties.getProperty(key);
     }
+
+    public Long getLong(String key){
+        String tmpVal= properties.getProperty(key);
+        try {
+            Long res= Long.parseLong(tmpVal);
+            return res;
+        }catch (NumberFormatException ne){
+            ne.printStackTrace();
+            return null;
+        }
+    }
 }

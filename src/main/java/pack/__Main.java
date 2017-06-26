@@ -29,6 +29,7 @@ public class __Main {
             Message message = MessageUtils.convertBaseCmdToMessage(cmd);
             ByteBuffer buffer = MessageUtils.convertMessageToBuffer(message);
             channel.write(buffer);
+            System.out.println();
         } catch (IOException ioe) {
             ioe.printStackTrace();
         }
