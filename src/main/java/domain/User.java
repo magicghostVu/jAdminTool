@@ -91,6 +91,12 @@ public class User {
     void handShakeAndLogin(){
         HandShakeCmd handShakeCmd= new HandShakeCmd("");
         Task taskHandShake= new Task(handShakeCmd);
+        OriginMessage res= taskHandShake.executeTask(this);
+
+
+
+
+
     }
 
 }

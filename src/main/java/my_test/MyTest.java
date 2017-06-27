@@ -81,7 +81,7 @@ public class MyTest extends TestCase {
         UserModel model=  userDAO.getUserModelByUserName("phuvh");
         //UserModel model = new UserModel("phuvh", AccountType.SUPER_ADMIN);
         model.setPasswordChanged(true);
-        model.setPasswordHash("hdfvdsjhgbqlngk4kjndknb");
+        model.setPasswordHash("81dc9bdb52d04dc20036dbd8313ed055");
         model.setAccessToken("iuhgdfijhgkfdj");
         boolean res=model.save();
         assertTrue(res);

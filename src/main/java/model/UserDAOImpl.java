@@ -7,8 +7,6 @@ import db.MongoDatabaseWrap;
 import org.bson.Document;
 import org.json.JSONObject;
 
-import javax.print.Doc;
-
 /**
  * Created by Fresher on 20/06/2017.
  */

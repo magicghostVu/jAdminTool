@@ -1,5 +1,7 @@
 package services;
 
+import domain.User;
+
 import java.io.IOException;
 import java.nio.channels.ClosedChannelException;
 import java.nio.channels.SelectionKey;
@@ -22,43 +24,54 @@ public class ServiceListenSocketEventFromServer {
     private UserManagementService userManagementService;
 
 
-    synchronized public void  registerASocketChannel(SocketChannel socketChannel){
-        try{
+    synchronized public void registerASocketChannel(SocketChannel socketChannel) {
+        try {
+
+            System.out.println("socket channel is registered");
+
             socketChannel.register(selector, operation);
-        }catch (ClosedChannelException closeChannelException){
+        } catch (ClosedChannelException closeChannelException) {
             closeChannelException.printStackTrace();
         }
     }
 
-    public ServiceListenSocketEventFromServer(){
-        try{
-            this.selector= Selector.open();
-        }catch (IOException ioe){
+    public ServiceListenSocketEventFromServer() {
+        try {
+            this.selector = Selector.open();
+        } catch (IOException ioe) {
             ioe.printStackTrace();
         }
 
         // so thread listen will be init here or not??
         //todo : implement thread listen event here
-        threadListenEventServer= new Thread(()->{
-            while(true){
+        threadListenEventServer = new Thread(() -> {
+            while (true) {
                 try {
                     this.selector.select();
                     Iterator<SelectionKey> allKeySelected = selector.selectedKeys().iterator();
                     allKeySelected.forEachRemaining(keySelected -> {
-                        allKeySelected.remove();
-                        SocketChannel socketChannel= (SocketChannel) keySelected.channel();
+                        try {
+                            allKeySelected.remove();
+                            SocketChannel socketChannel = (SocketChannel) keySelected.channel();
+                            User u = this.getUserManagementService().getUserBySocketChannel(socketChannel);
+                            if (keySelected.isConnectable()) {
+                                System.out.println("connectable");
+                                socketChannel.finishConnect();
+                            }
+                            if (keySelected.isAcceptable()) {
+                                System.out.println("Accepted");
+                            }
 
-
-                        //todo: getUser by channel, update map task
-
-
-
-
-
+                            if(keySelected.isReadable()){
+                                System.out.println("some data from server");
+                            }
+                        } catch (IOException ioe) {
+                            ioe.printStackTrace();
+                        }
                     });
 
 
-                }catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
@@ -66,7 +79,7 @@ public class ServiceListenSocketEventFromServer {
     }
 
 
-    void initService(){
+    void initService() {
         // may be thread start here
     }
 
