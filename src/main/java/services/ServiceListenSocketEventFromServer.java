@@ -18,18 +18,24 @@ public class ServiceListenSocketEventFromServer {
     private int operation = SelectionKey.OP_CONNECT | SelectionKey.OP_READ | SelectionKey.OP_WRITE;
 
 
+    private boolean selectorIsSelecting;
+
     private Thread threadListenEventServer;
 
 
     private UserManagementService userManagementService;
 
 
-    synchronized public void registerASocketChannel(SocketChannel socketChannel) {
+     public void registerASocketChannel(SocketChannel socketChannel) {
         try {
 
-            System.out.println("socket channel is registered");
+            this.setSelectorIsSelecting(false);
 
+            //System.out.println("socket channel is registered");
             socketChannel.register(selector, operation);
+            //System.out.println();
+
+            this.setSelectorIsSelecting(true);
         } catch (ClosedChannelException closeChannelException) {
             closeChannelException.printStackTrace();
         }
@@ -38,15 +44,17 @@ public class ServiceListenSocketEventFromServer {
     public ServiceListenSocketEventFromServer() {
         try {
             this.selector = Selector.open();
+            System.out.println("selector is opened");
         } catch (IOException ioe) {
             ioe.printStackTrace();
         }
-
         // so thread listen will be init here or not??
         //todo : implement thread listen event here
         threadListenEventServer = new Thread(() -> {
             while (true) {
+                if(!this.isSelectorIsSelecting()) continue;
                 try {
+                    //System.out.printf("se");
                     this.selector.select();
                     Iterator<SelectionKey> allKeySelected = selector.selectedKeys().iterator();
                     allKeySelected.forEachRemaining(keySelected -> {
@@ -81,6 +89,15 @@ public class ServiceListenSocketEventFromServer {
 
     void initService() {
         // may be thread start here
+        this.threadListenEventServer.start();
+    }
+
+    public boolean isSelectorIsSelecting() {
+        return selectorIsSelecting;
+    }
+
+    public void setSelectorIsSelecting(boolean selectorIsSelecting) {
+        this.selectorIsSelecting = selectorIsSelecting;
     }
 
     public UserManagementService getUserManagementService() {

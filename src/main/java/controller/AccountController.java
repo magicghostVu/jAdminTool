@@ -61,8 +61,6 @@ public class AccountController {
 
                 // get user by user name from Map
                 User user = userManagementService.getUserByUsername(pairAuthen.get_1());
-
-
                 if (user == null) {
 
                     System.out.println("new user login and put it to map");
@@ -70,9 +68,9 @@ public class AccountController {
                     // user first login so, create new user and put it to userManagement service
                     // then send handshake and login to bit_zero
                     UserModel userModel= userDAO.getUserModelByUserName(pairAuthen.get_1());
-                    // channel is registered in constructor of user
+                    // channel is registered to selector in constructor of user
                     user= new User(userModel);
-
+                    user.handShakeAndLogin();
                 } else {
                     // update it
                 }
@@ -101,7 +99,6 @@ public class AccountController {
         } catch (JSONException jo) {
             return createResponseString(RestfulErrorDefine.REQUEST_BODY_INVALID, "");
         }
-        //return null;
     }
 
     @RequestMapping(value = "test-authen-acctk", method = RequestMethod.POST, consumes = "application/json")
@@ -120,6 +117,7 @@ public class AccountController {
         }
     }
 
+    //rest api for super admin
     public String addAccount(String jsonData) {
 
 

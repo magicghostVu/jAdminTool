@@ -13,13 +13,21 @@ public class OriginMessage {
     private byte targetController;
 
     public OriginMessage(ByteBuffer target) {
-        packageHeader= target.get();
-        binDataLength= target.getShort();
-        data= new byte[binDataLength];
-        target.get(data);
-        ByteBuffer dataBuffer= ByteBuffer.wrap(data);
-        targetController= dataBuffer.get();
-        cmdID = dataBuffer.getShort();
+        packageHeader = target.get();
+        binDataLength = target.getShort();
+        if (binDataLength == 0) {
+            cmdID = -1;
+        } else {
+            data = new byte[binDataLength];
+            target.get(data);
+            ByteBuffer dataBuffer = ByteBuffer.wrap(data);
+            try {
+                targetController = dataBuffer.get();
+                cmdID = dataBuffer.getShort();
+            } catch (Exception e) {
+                System.out.println("bindata lenght " + binDataLength);
+            }
+        }
     }
 
     public byte getPackageHeader() {
