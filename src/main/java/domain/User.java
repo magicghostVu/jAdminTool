@@ -36,6 +36,10 @@ public class User {
 
     private Thread threadSelectAndListenDataFromServer;
 
+    private Runnable functionProcessListen;
+
+    private volatile boolean isRemoving= false;
+
 
     //this constructor will be invoke
     public User(UserModel model) {
@@ -52,7 +56,12 @@ public class User {
             int operation = SelectionKey.OP_CONNECT | SelectionKey.OP_READ | SelectionKey.OP_WRITE;
             socketChannel.register(this.selector, operation);
 
-            this.threadSelectAndListenDataFromServer = new Thread(() -> {
+
+            this.functionProcessListen= ()->{
+                if(isRemoving) {
+                    System.out.println("removing user"+ getModel().getUsername());
+                    return;
+                }
                 while (socketChannel.isOpen()) {
                     try {
                         selector.select();
@@ -65,27 +74,29 @@ public class User {
                         try {
                             allKeySelected.remove();
                             SocketChannel currentChannel = (SocketChannel) keySelected.channel();
-
                             if (keySelected.isAcceptable()) {
                                 System.out.println("accept key");
                             }
-
                             if (keySelected.isConnectable()) {
                                 System.out.println("Finish connect");
                                 currentChannel.finishConnect();
                             }
                             if (keySelected.isReadable()) {
-                                System.out.println("some data from server");
-                                ByteBuffer tmpByteBuffer = ByteBuffer.allocate(1024);
-                                currentChannel.read(tmpByteBuffer);
-                                System.out.println("Position of tmpBuffer " + tmpByteBuffer.position());
-                                if (tmpByteBuffer.position() != 0) {
-                                    ByteBuffer target = ByteBuffer.wrap(tmpByteBuffer.array());
-                                    OriginMessage oMessage = new OriginMessage(target);
-                                    System.out.println("received package with cmdId: " + oMessage.getCmdID());
-                                    if (oMessage.getBinDataLength() > 0) {
-                                        handleReadData(oMessage);
+                                if(!mapTask.isEmpty()){
+                                    System.out.println("some data from server");
+                                    ByteBuffer tmpByteBuffer = ByteBuffer.allocate(1024);
+                                    currentChannel.read(tmpByteBuffer);
+                                    System.out.println("Position of tmpBuffer " + tmpByteBuffer.position());
+                                    if (tmpByteBuffer.position() != 0) {
+                                        ByteBuffer target = ByteBuffer.wrap(tmpByteBuffer.array());
+                                        OriginMessage oMessage = new OriginMessage(target);
+                                        System.out.println("received package with cmdId: " + oMessage.getCmdID());
+                                        if (oMessage.getBinDataLength() > 0) {
+                                            handleReadData(oMessage);
+                                        }
                                     }
+                                }else{
+                                    //System.out.println("map task is empty and still receive data from server");
                                 }
                             }
 
@@ -96,7 +107,57 @@ public class User {
                     });
 
                 }
-            });
+            };
+
+            /*this.threadSelectAndListenDataFromServer = new Thread(() -> {
+                while (socketChannel.isOpen()) {
+                    try {
+                        selector.select();
+                    } catch (IOException ioe) {
+                        ioe.printStackTrace();
+                        System.out.println("Select error");
+                    }
+                    Iterator<SelectionKey> allKeySelected = selector.selectedKeys().iterator();
+                    allKeySelected.forEachRemaining(keySelected -> {
+                        try {
+                            allKeySelected.remove();
+                            SocketChannel currentChannel = (SocketChannel) keySelected.channel();
+                            if (keySelected.isAcceptable()) {
+                                System.out.println("accept key");
+                            }
+                            if (keySelected.isConnectable()) {
+                                System.out.println("Finish connect");
+                                currentChannel.finishConnect();
+                            }
+                            if (keySelected.isReadable()) {
+                                if(!mapTask.isEmpty()){
+                                    System.out.println("some data from server");
+                                    ByteBuffer tmpByteBuffer = ByteBuffer.allocate(1024);
+                                    currentChannel.read(tmpByteBuffer);
+                                    System.out.println("Position of tmpBuffer " + tmpByteBuffer.position());
+                                    if (tmpByteBuffer.position() != 0) {
+                                        ByteBuffer target = ByteBuffer.wrap(tmpByteBuffer.array());
+                                        OriginMessage oMessage = new OriginMessage(target);
+                                        System.out.println("received package with cmdId: " + oMessage.getCmdID());
+                                        if (oMessage.getBinDataLength() > 0) {
+                                            handleReadData(oMessage);
+                                        }
+                                    }
+                                }else{
+                                    //System.out.println("map task is empty and still receive data from server");
+                                }
+                            }
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            System.out.println("exception in select key");
+                        }
+                    });
+
+                }
+            });*/
+
+            this.threadSelectAndListenDataFromServer= new Thread(functionProcessListen);
             this.threadSelectAndListenDataFromServer.start();
 
         } catch (IOException ioe) {
@@ -137,12 +198,13 @@ public class User {
     }
 
 
-    public void updateInteractime() {
+    public void updateInteractTime() {
         setLastTimeInteract(System.currentTimeMillis() / 1000L);
     }
 
 
     public OriginMessage executeTask(Task task) {
+        updateInteractTime();
         mapTask.put(task.idTask, task);
         return task.executeTask(this);
     }
@@ -196,8 +258,26 @@ public class User {
                 }
             }*/
         }
-
-
     }
 
+    public Thread getThreadListen(){
+        return threadSelectAndListenDataFromServer;
+    }
+
+
+    public Runnable getFunctionProcessListen() {
+        return functionProcessListen;
+    }
+
+
+    public boolean isRemoving() {
+        return isRemoving;
+    }
+
+    public void setRemoving(boolean removing) {
+
+        System.out.println("set removing");
+
+        isRemoving = removing;
+    }
 }

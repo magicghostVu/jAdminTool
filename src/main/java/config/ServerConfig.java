@@ -16,6 +16,8 @@ public class ServerConfig {
 
     public static long TIME_OUT_EXECUTE_TASK;
 
+    public static long  TIME_OUT_INTERACT;
+
     public static Gson globalGson = new Gson();
 
 
@@ -29,6 +31,7 @@ public class ServerConfig {
         BITZERO_SERVER_ADDRESS= properties.getString("bitzero_server_address");
         BITZERO_SERVER_PORT= properties.getInt("bitzero_server_port");
         TIME_OUT_EXECUTE_TASK= properties.getLong("timeout_execute_task");
+        TIME_OUT_INTERACT= properties.getLong("time_out_interact");
     }
 
 

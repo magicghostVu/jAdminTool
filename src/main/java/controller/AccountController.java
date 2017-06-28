@@ -50,6 +50,8 @@ public class AccountController {
             // implement authentication service here
             String username = dataLogin.getString("username");
             String password = dataLogin.getString("password");
+
+
             MyPair<String, String> pairAuthen = authenticationService.authenUsernamePassword(username, password);
             if (pairAuthen != null) {
                 //todo: check if user exist in UserManagement,
@@ -63,10 +65,10 @@ public class AccountController {
                     System.out.println("new user login and put it to map");
                     user= new User(userModel);
                     user.handShakeAndLogin();
+                    userManagementService.addUserToMap(user);
                 } else {
                     user.setModel(userModel);
-                    user.updateInteractime();
-
+                    user.updateInteractTime();
                 }
                 return createResponseString(RestfulErrorDefine.SUCCESS, pairAuthen.get_2());
             } else {
