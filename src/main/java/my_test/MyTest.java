@@ -9,6 +9,7 @@ import globalAppContext.GlobalApplicationContextWrap;
 import junit.framework.TestCase;
 import model.UserDAOImpl;
 import model.UserModel;
+import org.apache.log4j.Logger;
 import org.junit.Test;
 import utils.MD5Utils;
 
@@ -107,5 +108,12 @@ public class MyTest extends TestCase {
         Integer res= mapTest.get(1);
         assertTrue(res==null);
     }
+
+    public void testLog4j(){
+        Logger logger= Logger.getLogger("FileLogServer");
+        logger.error("This is message from log4j");
+
+    }
+
 
 }

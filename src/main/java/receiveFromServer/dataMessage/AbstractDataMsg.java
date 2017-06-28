@@ -9,6 +9,7 @@ public  class AbstractDataMsg {
 
     protected byte errorCode;
 
+
     public AbstractDataMsg(byte[] data) {
 
     }

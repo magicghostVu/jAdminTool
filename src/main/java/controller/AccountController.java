@@ -52,27 +52,21 @@ public class AccountController {
             String password = dataLogin.getString("password");
             MyPair<String, String> pairAuthen = authenticationService.authenUsernamePassword(username, password);
             if (pairAuthen != null) {
-
-
                 //todo: check if user exist in UserManagement,
                 // if it had existed update it and continue use it
                 // if it is not exist, create new user with data and put it in to the maps
                 // (update it into userManagement service )
-
-                // get user by user name from Map
+                UserModel userModel= userDAO.getUserModelByUserName(pairAuthen.get_1());
+                //get user by user name from Map
                 User user = userManagementService.getUserByUsername(pairAuthen.get_1());
                 if (user == null) {
-
                     System.out.println("new user login and put it to map");
-
-                    // user first login so, create new user and put it to userManagement service
-                    // then send handshake and login to bit_zero
-                    UserModel userModel= userDAO.getUserModelByUserName(pairAuthen.get_1());
-                    // channel is registered to selector in constructor of user
                     user= new User(userModel);
                     user.handShakeAndLogin();
                 } else {
-                    // update it
+                    user.setModel(userModel);
+                    user.updateInteractime();
+
                 }
                 return createResponseString(RestfulErrorDefine.SUCCESS, pairAuthen.get_2());
             } else {
@@ -83,6 +77,8 @@ public class AccountController {
         }
     }
 
+
+    // refactor
     @RequestMapping(value = "/logout", method = RequestMethod.POST, consumes = "application/json")
     public String logout(@RequestBody String data) {
         try {

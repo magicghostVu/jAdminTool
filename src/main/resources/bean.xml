@@ -21,10 +21,4 @@
         </property>
     </bean>
 
-    <!--<bean id="listen_data_from_server" class="services.ServiceListenSocketEventFromServer" init-method="initService">
-        <property name="userManagementService">
-            <ref bean="user_management_service" />
-        </property>
-    </bean>-->
-
 </beans>

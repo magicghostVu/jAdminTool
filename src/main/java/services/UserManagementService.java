@@ -2,14 +2,10 @@ package services;
 
 import domain.User;
 
-import java.nio.channels.SocketChannel;
-
 /**
  * Created by magic_000 on 24/06/2017.
  */
 public interface UserManagementService {
-
-    User getUserByAccessToken(String accessToken);
 
     boolean removeUserFromMap(User user);
 
@@ -17,5 +13,5 @@ public interface UserManagementService {
 
     User getUserByUsername(String username);
 
-    User getUserBySocketChannel(SocketChannel socketChannel);
+    //User getUserBySocketChannel(SocketChannel socketChannel);
 }

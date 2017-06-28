@@ -5,6 +5,7 @@ import config.constant.CmdDefine;
 import model.UserModel;
 import receiveFromServer.OriginMessage;
 import receiveFromServer.dataMessage.HandshakeMsg;
+import receiveFromServer.dataMessage.LoginMsg;
 import sendToServer.cmd.HandShakeCmd;
 import sendToServer.cmd.LoginCmd;
 
@@ -64,6 +65,11 @@ public class User {
                         try {
                             allKeySelected.remove();
                             SocketChannel currentChannel = (SocketChannel) keySelected.channel();
+
+                            if (keySelected.isAcceptable()) {
+                                System.out.println("accept key");
+                            }
+
                             if (keySelected.isConnectable()) {
                                 System.out.println("Finish connect");
                                 currentChannel.finishConnect();
@@ -72,15 +78,15 @@ public class User {
                                 System.out.println("some data from server");
                                 ByteBuffer tmpByteBuffer = ByteBuffer.allocate(1024);
                                 currentChannel.read(tmpByteBuffer);
-                                ByteBuffer target = ByteBuffer.wrap(tmpByteBuffer.array());
-                                OriginMessage oMessage = new OriginMessage(target);
-                                System.out.println("received package with cmdId: " + oMessage.getCmdID());
-
-                                if (oMessage.getBinDataLength() > 0) {
-                                    handleReadData(oMessage);
+                                System.out.println("Position of tmpBuffer " + tmpByteBuffer.position());
+                                if (tmpByteBuffer.position() != 0) {
+                                    ByteBuffer target = ByteBuffer.wrap(tmpByteBuffer.array());
+                                    OriginMessage oMessage = new OriginMessage(target);
+                                    System.out.println("received package with cmdId: " + oMessage.getCmdID());
+                                    if (oMessage.getBinDataLength() > 0) {
+                                        handleReadData(oMessage);
+                                    }
                                 }
-                                // handle read data from server
-
                             }
 
                         } catch (Exception e) {
@@ -131,10 +137,14 @@ public class User {
     }
 
 
+    public void updateInteractime() {
+        setLastTimeInteract(System.currentTimeMillis() / 1000L);
+    }
+
+
     public OriginMessage executeTask(Task task) {
         mapTask.put(task.idTask, task);
         return task.executeTask(this);
-        //return null;
     }
 
     public void handShakeAndLogin() {
@@ -142,19 +152,20 @@ public class User {
         Task taskHandShake = new Task(handShakeCmd);
         OriginMessage res = executeTask(taskHandShake);
         if (res != null) {
-            HandshakeMsg msg = new HandshakeMsg(res.getData());
-            System.out.println("Session token " + msg.getSessionToken());
-
-            if (msg.getErrorCode() != 0) {
+            HandshakeMsg handshakeMsg = new HandshakeMsg(res.getData());
+            System.out.println("Session token " + handshakeMsg.getSessionToken());
+            if (handshakeMsg.getErrorCode() == 0) {
                 LoginCmd loginCmd = new LoginCmd(ServerConfig.USERNAME_BITZERO_PREFIX + getModel().getUsername());
                 Task taskLogin = new Task(loginCmd);
-            }else{
-                System.out.println("Loi cmnr "+ msg.);
+                OriginMessage resLogin = executeTask(taskLogin);
+                System.out.println("res login " + resLogin.getData());
+                LoginMsg loginMsg = new LoginMsg(resLogin.getData());
+                if (loginMsg.getErrorCode() != 0) {
+                    System.out.println("login loi cmnr");
+                }
+            } else {
+                System.out.println("Loi cmnr " + handshakeMsg.getErrorCode());
             }
-
-
-
-
         } else {
             System.out.println("Handshake err cmnr");
         }
@@ -162,20 +173,31 @@ public class User {
     }
 
 
-    void handleReadData(OriginMessage originMessage) {
-
+    private void handleReadData(OriginMessage originMessage) {
         //if(mapTask)
-        switch (originMessage.getCmdID()) {
-            case CmdDefine.HANDSHAKE: {
-                if (mapTask.containsKey((int) CmdDefine.HANDSHAKE)) {
-                    Task currentTask = mapTask.get((int) CmdDefine.HANDSHAKE);
-                    currentTask.setDataMessageFromServer(originMessage);
-                    currentTask.setStatus(TaskStatus.RECEIVED);
-
-                    //System.out.println("task set status");
+        if (mapTask.containsKey((int) originMessage.getCmdID())) {
+            Task task = mapTask.get((int) originMessage.getCmdID());
+            task.setDataMessageFromServer(originMessage);
+            task.setStatus(TaskStatus.RECEIVED);
+            // so should remove it from map task
+            mapTask.remove((int) originMessage.getCmdID());
+            /*switch (originMessage.getCmdID()) {
+                case CmdDefine.HANDSHAKE: {
+                    Task handShakeTask = mapTask.get((int) CmdDefine.HANDSHAKE);
+                    handShakeTask.setDataMessageFromServer(originMessage);
+                    handShakeTask.setStatus(TaskStatus.RECEIVED);
+                    break;
                 }
-            }
+                case CmdDefine.LOGIN: {
+                    Task loginTask= mapTask.get((int)CmdDefine.LOGIN);
+                    loginTask.setDataMessageFromServer(originMessage);
+                    loginTask.setStatus(TaskStatus.RECEIVED);
+                    break;
+                }
+            }*/
         }
+
+
     }
 
 }
