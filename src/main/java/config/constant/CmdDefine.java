@@ -6,5 +6,6 @@ package config.constant;
 public class CmdDefine {
     public static final short HANDSHAKE = 0;
     public static final short LOGIN = 1;
+    public static final short ADMIN_GET_INFO= 9015;
 
 }

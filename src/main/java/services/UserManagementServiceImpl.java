@@ -17,11 +17,11 @@ public class UserManagementServiceImpl implements UserManagementService {
 
     public UserManagementServiceImpl() {
         mapUsernameUser = new ConcurrentHashMap<>();
-
         Runnable cleanLongNotInteractUser = () -> mapUsernameUser
                 .forEach((username, user) -> {
             long idleTime=System.currentTimeMillis()/1000L- user.getLastTimeInteract();
             if(idleTime> ServerConfig.TIME_OUT_INTERACT){
+                System.out.println("user "+ username+ "cleaned");
                 removeUserFromMap(user);
             }
         });

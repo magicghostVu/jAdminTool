@@ -276,7 +276,7 @@ public class User {
 
     public void setRemoving(boolean removing) {
 
-        System.out.println("set removing");
+        System.out.println("set removing for user" + model.getUsername());
 
         isRemoving = removing;
     }
