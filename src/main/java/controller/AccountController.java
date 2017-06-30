@@ -19,6 +19,7 @@ import services.AuthenticationService;
 import services.AuthenticationServiceImpl;
 import services.UserManagementService;
 import services.UserManagementServiceImpl;
+import utils.JsonUtis;
 import utils.MyPair;
 
 /**
@@ -70,12 +71,12 @@ public class AccountController {
                     user.setModel(userModel);
                     user.updateInteractTime();
                 }
-                return createResponseString(RestfulErrorDefine.SUCCESS, pairAuthen.get_2());
+                return JsonUtis.createResponseString(RestfulErrorDefine.SUCCESS, pairAuthen.get_2());
             } else {
-                return createResponseString(RestfulErrorDefine.USERNAME_OR_PASSWORD_INVALID, "");
+                return JsonUtis.createResponseString(RestfulErrorDefine.USERNAME_OR_PASSWORD_INVALID, "");
             }
         } catch (JSONException jo) {
-            return createResponseString(RestfulErrorDefine.REQUEST_BODY_INVALID, "");
+            return JsonUtis.createResponseString(RestfulErrorDefine.REQUEST_BODY_INVALID, "");
         }
     }
 
@@ -89,13 +90,13 @@ public class AccountController {
             UserModel model = authenticationService.authenAccessToken(accessToken);
             if (model != null) {
                 model.clearAccessToken();
-                return createResponseString(RestfulErrorDefine.SUCCESS, "logout: " + model.getUsername());
+                return JsonUtis.createResponseString(RestfulErrorDefine.SUCCESS, "logout: " + model.getUsername());
             } else {
-                return createResponseString(RestfulErrorDefine.FAILED, "");
+                return JsonUtis.createResponseString(RestfulErrorDefine.FAILED, "");
             }
 
         } catch (JSONException jo) {
-            return createResponseString(RestfulErrorDefine.REQUEST_BODY_INVALID, "");
+            return JsonUtis.createResponseString(RestfulErrorDefine.REQUEST_BODY_INVALID, "");
         }
     }
 
@@ -106,12 +107,12 @@ public class AccountController {
             String accessToken = dataObject.getString("access-token");
             UserModel userModel = authenticationService.authenAccessToken(accessToken);
             if (userModel != null) {
-                return createResponseString(RestfulErrorDefine.SUCCESS, userModel.getUsername());
+                return JsonUtis.createResponseString(RestfulErrorDefine.SUCCESS, userModel.getUsername());
             } else {
-                return createResponseString(RestfulErrorDefine.FAILED, "");
+                return JsonUtis.createResponseString(RestfulErrorDefine.FAILED, "");
             }
         } catch (JSONException jo) {
-            return createResponseString(RestfulErrorDefine.REQUEST_BODY_INVALID, "");
+            return JsonUtis.createResponseString(RestfulErrorDefine.REQUEST_BODY_INVALID, "");
         }
     }
 
@@ -122,8 +123,8 @@ public class AccountController {
         return null;
     }
 
-    private String createResponseString(RestfulErrorDefine err, String data) {
+    /*private String createResponseString(RestfulErrorDefine err, String data) {
         BaseRestResponse restResponse = new BaseRestResponse(err, data);
         return ServerConfig.globalGson.toJson(restResponse);
-    }
+    }*/
 }

@@ -11,15 +11,16 @@ public class UserInfoMsg extends AbstractDataMsg {
     private String deviceId="";
     public UserInfoMsg(byte[] data) {
         super(data);
+        unpackData(data);
     }
 
     @Override
     public void unpackData(byte[] data) {
         try{
             ByteArray ba= readErrorCode(data);
-
-            
-
+            uid= ba.readInt();
+            ign= ba.readUTF();
+            deviceId= ba.readUTF();
         }catch (Exception e){
             e.printStackTrace();
         }
